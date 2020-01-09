@@ -1,8 +1,5 @@
 package com.example.newsfeedapplication;
 
-import android.graphics.ColorSpace;
-import android.view.Display;
-
 import java.util.Comparator;
 
 public class Model {
