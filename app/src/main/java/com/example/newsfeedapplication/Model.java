@@ -1,5 +1,10 @@
 package com.example.newsfeedapplication;
 
+import android.graphics.ColorSpace;
+import android.view.Display;
+
+import java.util.Comparator;
+
 public class Model {
 
     private String title, description;
@@ -28,4 +33,18 @@ public class Model {
     public void setImg(int img) {
         this.img = img;
     }
+
+    public static final Comparator<Model> By_TITLE_ASCEDING = new Comparator<Model>() {
+        @Override
+        public int compare(Model o1, Model o2) {
+            return o1.getTitle().compareTo(o2.getTitle());
+        }
+    };
+
+    public static final Comparator<Model> By_TITLE_DESCENDING = new Comparator<Model>() {
+        @Override
+        public int compare(Model o1, Model o2) {
+            return o2.getTitle().compareTo(o1.getTitle());
+        }
+    };
 }
