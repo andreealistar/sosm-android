@@ -3,13 +3,14 @@ package com.example.newsfeedapplication;
 import android.widget.Filter;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class CustomFilter extends Filter {
 
-    ArrayList<Model> filterList;
+    List<News> filterList;
     MyAdapter adapter;
 
-    protected CustomFilter(ArrayList<Model> filterList, MyAdapter adapter) {
+    protected CustomFilter(List<News> filterList, MyAdapter adapter) {
         this.filterList = filterList;
         this.adapter = adapter;
     }
@@ -21,10 +22,10 @@ public class CustomFilter extends Filter {
         if (constraint != null && constraint.length() > 0) {
             constraint = constraint.toString().toUpperCase();
 
-            ArrayList<Model> filterModels = new ArrayList<>();
+            List<News> filterModels = new ArrayList<>();
 
             for (int i = 0; i < filterList.size(); i++) {
-                if (filterList.get(i).getTitle().toUpperCase().contains(constraint)) {
+                if (filterList.get(i).title.toUpperCase().contains(constraint)) {
                     filterModels.add(filterList.get(i));
                 }
             }
@@ -43,7 +44,7 @@ public class CustomFilter extends Filter {
 
     @Override
     protected void publishResults(CharSequence constraint, FilterResults results) {
-        adapter.models = (ArrayList<Model>) results.values;
+        adapter.models = (List<News>) results.values;
         adapter.notifyDataSetChanged();
     }
 }

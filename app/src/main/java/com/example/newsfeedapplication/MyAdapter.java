@@ -14,15 +14,15 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
+import java.util.List;
 
 public class MyAdapter extends RecyclerView.Adapter<MyHolder> implements Filterable {
 
     Context c;
-    ArrayList<Model> models, filterList;
+    List<News> models, filterList;
     CustomFilter filter;
 
-    public MyAdapter(Context c, ArrayList<Model> models) {
+    public MyAdapter(Context c, List<News> models) {
         this.c = c;
         this.models = models;
         this.filterList = models;
@@ -40,15 +40,15 @@ public class MyAdapter extends RecyclerView.Adapter<MyHolder> implements Filtera
     @Override
     public void onBindViewHolder(@NonNull final MyHolder myHolder, int i) {
 
-        myHolder.mTitle.setText(models.get(i).getTitle());
-        myHolder.mDes.setText(models.get(i).getDescription());
-        myHolder.mImaeView.setImageResource(models.get(i).getImg());
+        myHolder.mTitle.setText(models.get(i).title + (models.get(i).exists ? "" : " - NEW"));
+        myHolder.mDes.setText(models.get(i).description);
+        myHolder.mImaeView.setImageResource(models.get(i).img);
 
         myHolder.setItemClickListener(new ItemClickListener() {
             @Override
             public void onItemClickListener(View v, int position) {
-                String gTitle = models.get(position).getTitle();
-                String gDesc = models.get(position).getDescription();
+                String gTitle = models.get(position).title + (models.get(position).exists ? "" : " - NEW");
+                String gDesc = models.get(position).description;
                 BitmapDrawable bitmapDrawable = (BitmapDrawable)myHolder.mImaeView.getDrawable();
 
                 Bitmap bitmap = bitmapDrawable.getBitmap();
@@ -63,31 +63,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyHolder> implements Filtera
                 intent.putExtra("iTitle", gTitle);
                 intent.putExtra("iDesc", gDesc);
                 intent.putExtra("iImage", bytes);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 c.startActivity(intent);
 
             }
         });
-
-//        myHolder.setItemClickListener(new ItemClickListener() {
-//            @Override
-//            public void onItemClickListener(View v, int position) {
-//                if (models.get(position).getTitle().equals("News Feed - image_1")) {
-//
-//                }
-//                if (models.get(position).getTitle().equals("News Feed - image_2")) {
-//
-//                }
-//                if (models.get(position).getTitle().equals("News Feed - image_3")) {
-//
-//                }
-//                if (models.get(position).getTitle().equals("News Feed - image_4")) {
-//
-//                }
-//                if (models.get(position).getTitle().equals("News Feed - image_5")) {
-//
-//                }
-//            }
-//        });
     }
 
     @Override

@@ -9,11 +9,22 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.SearchView;
-import java.util.ArrayList;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.google.gson.Gson;
+
+import java.util.List;
+import java.util.Arrays;
 import java.util.Collections;
 
 public class MainActivity extends AppCompatActivity {
@@ -34,50 +45,49 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getMyList() {
-        ArrayList<Model> models = new ArrayList<>();
 
-        Model m = new Model();
-        m.setTitle("News Feed - image_1");
-        m.setDescription("This is image_1 description..");
-        m.setImg(R.drawable.first);
-        models.add(m);
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String url ="https://android-news-feed.azurewebsites.net/api/HttpTrigger1?code=sdpMUNHHaT0gk6kkhPfc35veQ5qoSn20JWOa3UYRxhNQKuaSUNmzWA==";
 
-        m = new Model();
-        m.setTitle("News Feed - image_2");
-        m.setDescription("This is image_2 description..");
-        m.setImg(R.drawable.second);
-        models.add(m);
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        News[] news = new Gson().fromJson(response, News[].class);
+                        List<News> oldNews = NewsRoomDatabase.getDatabase(getApplicationContext()).newsDao().loadAll();
+                        List<News> models = Arrays.asList(news);
 
-        m = new Model();
-        m.setTitle("News Feed - image_3");
-        m.setDescription("This is image_3 description..");
-        m.setImg(R.drawable.first);
-        models.add(m);
+                        for (News newNews : models) {
+                            boolean exists = false;
+                            for (News oldNew : oldNews) {
+                                if (oldNew.id == newNews.id) {
+                                    exists = true;
+                                }
+                            }
+                            newNews.exists = exists;
+                        }
+                        NewsRoomDatabase.getDatabase(getApplicationContext()).newsDao().insertAll(news);
+                        String mSortSetting = preferences.getString("Sort", "asceding");
 
-        m = new Model();
-        m.setTitle("News Feed - image_4");
-        m.setDescription("This is image_4 description..");
-        m.setImg(R.drawable.second);
-        models.add(m);
+                        if (mSortSetting.equals("ascending")) {
+                            Collections.sort(models, News.By_TITLE_ASCEDING);
+                        }
+                        else if (mSortSetting.equals("descending")) {
+                            Collections.sort(models, News.By_TITLE_DESCENDING);
+                        }
 
-        m = new Model();
-        m.setTitle("News Feed - image_5");
-        m.setDescription("This is image_5 description..");
-        m.setImg(R.drawable.first);
-        models.add(m);
+                        mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+                        myAdapter = new MyAdapter(getApplicationContext(), models);
+                        mRecyclerView.setAdapter(myAdapter);
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("news", error.getMessage());
+            }
+        });
 
-        String mSortSetting = preferences.getString("Sort", "asceding");
-
-        if (mSortSetting.equals("ascending")) {
-            Collections.sort(models, Model.By_TITLE_ASCEDING);
-        }
-        else if (mSortSetting.equals("descending")) {
-            Collections.sort(models, Model.By_TITLE_DESCENDING);
-        }
-
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        myAdapter = new MyAdapter(this, models);
-        mRecyclerView.setAdapter(myAdapter);
+        queue.add(stringRequest);
     }
 
     @Override
