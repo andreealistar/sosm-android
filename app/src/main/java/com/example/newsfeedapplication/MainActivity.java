@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
                             newNews.exists = exists;
                         }
                         NewsRoomDatabase.getDatabase(getApplicationContext()).newsDao().insertAll(news);
-                        String mSortSetting = preferences.getString("Sort", "asceding");
+                        String mSortSetting = preferences.getString("Sort", "ascending");
 
                         if (mSortSetting.equals("ascending")) {
                             Collections.sort(models, News.By_TITLE_ASCEDING);
@@ -140,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(DialogInterface dialog, int which) {
                 if (which == 0) {
                     SharedPreferences.Editor editor = preferences.edit();
-                    editor.putString("Sort", "asceding");
+                    editor.putString("Sort", "ascending");
                     editor.apply();
                     getMyList();
                 }
